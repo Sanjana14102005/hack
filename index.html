@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TPGIT Digital Notice Board</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#0a3d62;
+    color:white;
+}
+
+/* HERO SECTION */
+.hero{
+    position:relative;
+    height:100vh;
+    overflow:hidden;
+}
+
+.hero video{
+    position:absolute;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    top:0;
+    left:0;
+    z-index:-2;
+}
+
+.hero-overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:linear-gradient(to right, rgba(0,0,0,0.8), rgba(10,61,98,0.7));
+    z-index:-1;
+}
+
+.hero-content{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.college-name{
+    font-size:32px;
+    font-weight:700;
+}
+
+.hero-text{
+    font-size:18px;
+    margin:15px 0 30px;
+}
+
+/* DROPDOWN */
+.dropdown{
+    position:relative;
+}
+
+.dropbtn{
+    background:white;
+    color:#0a3d62;
+    padding:14px 30px;
+    border:none;
+    border-radius:30px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.dropbtn:hover{
+    transform:scale(1.05);
+}
+
+.dropdown-content{
+    display:none;
+    position:absolute;
+    background:white;
+    min-width:200px;
+    border-radius:15px;
+    margin-top:12px;
+    overflow:hidden;
+    box-shadow:0 15px 30px rgba(0,0,0,0.5);
+}
+
+.dropdown-content button{
+    width:100%;
+    padding:12px;
+    border:none;
+    background:none;
+    cursor:pointer;
+    font-size:14px;
+    color:#0a3d62;
+}
+
+.dropdown-content button:hover{
+    background:#0a3d62;
+    color:white;
+}
+
+.show{
+    display:block;
+}
+
+/* CAMPUS SECTION */
+.section{
+    padding:80px 10%;
+    background:#f4f6f8;
+    color:#333;
+}
+
+.section h2{
+    text-align:center;
+    margin-bottom:40px;
+    font-size:28px;
+    color:#0a3d62;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    gap:30px;
+}
+
+/* EQUAL IMAGE SIZE FIX */
+.grid img{
+    width:100%;
+    height:350px;        /* SAME HEIGHT FOR BOTH */
+    object-fit:cover;    /* Crop without distortion */
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    transition:0.4s;
+}
+
+.grid img:hover{
+    transform:scale(1.05);
+}
+
+/* ABOUT SECTION */
+.about{
+    background:#0a3d62;
+    color:white;
+    text-align:center;
+    padding:80px 10%;
+}
+
+.about p{
+    max-width:900px;
+    margin:auto;
+    line-height:1.8;
+}
+
+.footer{
+    background:#000;
+    padding:20px;
+    text-align:center;
+    font-size:14px;
+}
+
+@media(max-width:768px){
+    .college-name{
+        font-size:24px;
+    }
+
+    .grid img{
+        height:250px;   /* Smaller on mobile */
+    }
+}
+</style>
+</head>
+
+<body>
+
+<section class="hero">
+
+    <video autoplay muted loop>
+        <source src="https://cdn.coverr.co/videos/coverr-university-campus-9713/1080p.mp4" type="video/mp4">
+    </video>
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div class="college-name">
+            TPGIT VELLORE
+        </div>
+
+        <div class="hero-text">
+            Smart Digital Notice Board Management System
+        </div>
+
+        <div class="dropdown">
+            <button onclick="toggleDropdown()" class="dropbtn">
+                Login ▼
+            </button>
+
+            <div id="loginDropdown" class="dropdown-content">
+                <button onclick="navigate('admin_login.html')">Admin Login</button>
+                <button onclick="navigate('faculty_login.html')">Faculty Login</button>
+                <button onclick="navigate('student_login.html')">Student Login</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h2>Campus Highlights</h2>
+    <div class="grid">
+        <img src="images/placement.png" alt="Placement Drive">
+        <img src="images/certificate.png" alt="Certificate Event">
+    </div>
+</section>
+
+<section class="about">
+    <h2>About TPGIT</h2>
+    <p>
+        TPGIT Vellore is committed to excellence in engineering education,
+        innovation, and leadership development.
+    </p>
+</section>
+
+<div class="footer">
+    © 2026 TPGIT Digital Notice Board | CSE Department
+</div>
+
+<script>
+function toggleDropdown(){
+    document.getElementById("loginDropdown").classList.toggle("show");
+}
+
+function navigate(page){
+    window.location.href=page;
+}
+
+window.onclick=function(event){
+    if(!event.target.matches('.dropbtn')){
+        let dropdown=document.getElementById("loginDropdown");
+        if(dropdown.classList.contains('show')){
+            dropdown.classList.remove('show');
+        }
+    }
+}
+</script>
+
+</body>
+</html>

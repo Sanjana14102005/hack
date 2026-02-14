@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f4f6f8}
+header{background:#0a3d62;color:#fff;padding:12px;font-size:20px}
+marquee{background:#08324f;color:#fff;padding:6px}
+
+.container{display:flex;height:calc(100vh - 80px)}
+
+.sidebar{
+  width:260px;background:#1e272e;color:#fff
+}
+.profile{
+  padding:16px;text-align:center;border-bottom:1px solid #444
+}
+.profile img{
+  width:70px;border-radius:50%;margin-bottom:6px
+}
+
+.menu{padding:14px 20px;cursor:pointer;border-bottom:1px solid #444}
+.menu:hover{background:#485460}
+
+.submenu{display:none;background:#2f3640}
+.submenu div{padding:12px 40px;cursor:pointer}
+.submenu div:hover{background:#485460}
+
+.content{flex:1;padding:20px;overflow:auto}
+
+.notice{
+  background:#fff;border-left:5px solid #0a3d62;
+  padding:15px;margin-bottom:20px;border-radius:6px
+}
+
+.btn{
+  padding:6px 12px;
+  background:#0a3d62;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+  margin-right:5px;
+}
+
+.delete{background:#ee5253}
+
+.edit-box{
+  background:#f1f2f6;
+  padding:12px;
+  margin-top:10px;
+  border-radius:6px
+}
+
+input,textarea{
+  width:100%;
+  padding:8px;
+  margin-bottom:8px
+}
+</style>
+</head>
+
+<body>
+
+<header>🛠 ADMIN DASHBOARD</header>
+<marquee>Admin controls all notices – Students & Faculty view instantly</marquee>
+
+<div class="container">
+
+<div class="sidebar">
+  <div class="profile">
+    <img src="https://i.imgur.com/6VBx3io.png">
+    <br>
+    <b>AdminUser</b>
+  </div>
+
+  <div class="menu" onclick="toggle('events')">▶ Events</div>
+  <div class="submenu" id="events">
+    <div onclick="load('events','hackathon')">Hackathon</div>
+    <div onclick="load('events','clubs')">Clubs</div>
+    <div onclick="load('events','seminars')">Seminars</div>
+    <div onclick="load('events','guestlectures')">Guest Lectures</div>
+  </div>
+
+  <div class="menu" onclick="load('faculty','meeting')">Faculty Meeting</div>
+  <div class="menu" onclick="load('examination','duty')">Examination Duty</div>
+
+  <div class="menu">Student Management</div>
+  <div class="menu">Faculty Management</div>
+</div>
+
+<div class="content" id="content"></div>
+</div>
+
+<script>
+let CURRENT_KEY="";
+
+function toggle(id){
+  let el=document.getElementById(id);
+  el.style.display = el.style.display==="block"?"none":"block";
+}
+
+function key(m,s){return `notices_${m}_${s}`}
+
+function load(m,s){
+  CURRENT_KEY=key(m,s);
+  render();
+}
+
+function render(){
+  let data=JSON.parse(localStorage.getItem(CURRENT_KEY))||[];
+
+  let html=`<h2>${CURRENT_KEY}</h2>
+  <button class="btn" onclick="add()">+ Add Notice</button><br><br>`;
+
+  data.forEach((n,i)=>{
+
+    html+=`<div class="notice">`;
+
+    // Show notice content only if text exists
+    if(n.text){
+      html+=`<b>${n.text}</b><br>
+             📅 ${n.date || ""}<br>
+             ${preview(n)}<br>
+
+             <button class="btn" onclick="edit(${i})">Edit</button>
+             <button class="btn delete" onclick="del(${i})">Delete</button>`;
+    }
+
+    html+=`
+      <div class="edit-box" id="e${i}" style="${n.text ? 'display:none' : 'display:block'}">
+        <textarea id="t${i}" placeholder="Enter Notice">${n.text || ""}</textarea>
+        <input type="date" id="d${i}" value="${n.date || ""}">
+        <input type="file" id="f${i}">
+        <button class="btn" onclick="update(${i})">Upload</button>
+        <button class="btn delete" onclick="cancel(${i})">Cancel</button>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById("content").innerHTML=html;
+}
+
+function preview(n){
+  if(!n.fileData) return "";
+  if(n.fileType && n.fileType.startsWith("image"))
+    return `<img src="${n.fileData}" width="200"><br>
+            <a class="btn" href="${n.fileData}" download>Download</a>`;
+  return `📄 ${n.fileName || ""}<br>
+          <a class="btn" target="_blank" href="${n.fileData}">Open</a>
+          <a class="btn" href="${n.fileData}" download>Download</a>`;
+}
+
+function add(){
+  let d=JSON.parse(localStorage.getItem(CURRENT_KEY))||[];
+  d.unshift({text:"",date:"",fileData:"",fileType:"",fileName:""});
+  localStorage.setItem(CURRENT_KEY,JSON.stringify(d));
+  render();
+}
+
+function edit(i){
+  document.getElementById("e"+i).style.display="block";
+}
+
+function cancel(i){
+  render();
+}
+
+function del(i){
+  let d=JSON.parse(localStorage.getItem(CURRENT_KEY));
+  d.splice(i,1);
+  localStorage.setItem(CURRENT_KEY,JSON.stringify(d));
+  render();
+}
+
+function update(i){
+  let d=JSON.parse(localStorage.getItem(CURRENT_KEY));
+  d[i].text=document.getElementById("t"+i).value;
+  d[i].date=document.getElementById("d"+i).value;
+
+  let f=document.getElementById("f"+i).files[0];
+
+  if(f){
+    let r=new FileReader();
+    r.onload=()=>{
+      d[i].fileData=r.result;
+      d[i].fileType=f.type;
+      d[i].fileName=f.name;
+      save(d);
+    }
+    r.readAsDataURL(f);
+  } else save(d);
+}
+
+function save(d){
+  localStorage.setItem(CURRENT_KEY,JSON.stringify(d));
+  render();
+}
+
+load("events","hackathon");
+</script>
+
+</body>
+</html>
